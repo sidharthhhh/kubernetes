@@ -144,6 +144,13 @@ kubectl exec deployment/todo-api -- env
 
 ## 🧹 Cleanup
 
+Make sure you run this from the **root** of the repository (where `day3` folder is visible), or adjust the path.
+
 ```powershell
+# From project root:
 kubectl delete -f day3/manifests/
+
+# Checks (Verify cleanup)
+kubectl get pods
+# Wait until you see "No resources found in default namespace."
 ```
