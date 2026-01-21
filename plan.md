@@ -45,7 +45,7 @@
     *   **Fix:** Observe Pods running but `READY 0/1`. Fix the probe.
 *   **Interview Q:** "What happens if I delete a ReplicaSet managed by a Deployment?"
 
-### **Day 3: Networking I - Services & Service Discovery**
+### ✅ **Day 3: Networking I - Services & Service Discovery**
 *Goal: How Pods talk to each other reliably.*
 
 *   **Concepts:**

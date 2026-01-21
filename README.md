@@ -48,7 +48,7 @@ kubectl version
 ### Course Progress
 - ✅ **[Day 1: The Pod & The Container](./day1/README.md)** - Pods, containers, debugging basics
 - ✅ **[Day 2: Controllers & Scalability](./day2/README.md)** - Deployments, ReplicaSets, health probes
-- 🛠️ **[Day 3: Networking I - Services](./day3/README.md)** - ClusterIP, Service Discovery, DNS
+- ✅ **[Day 3: Networking I - Services](./day3/README.md)** - Microservices, ClusterIP, Service Discovery, Scaling
 
 Open [plan.md](./plan.md) for the complete 15-day syllabus.
 
