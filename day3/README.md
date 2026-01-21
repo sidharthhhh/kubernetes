@@ -3,125 +3,81 @@
 ## 📚 Learning Objectives
 
 By the end of this lab, you will understand:
-- How **Kubernetes Services** provide stable IPs and DNS names for Pods.
-- The difference between **ClusterIP**, **NodePort**, and **LoadBalancer**.
-- How **CoreDNS** enables service discovery (e.g., accessing Redis via `redis-service`).
-- How to connect microservices (Go App -> Redis) using internal DNS.
+- **Service Discovery:** How Frontend finds Backend, and Backend finds Redis using DNS.
+- **Service Chaining:** Connecting multiple microservices (`Frontend` -> `Backend` -> `Redis`).
+- **ClusterIP:** Why internal services used for backend are secure by default.
 
-## 🎯 Prerequisites
+## 🎯 Architecture
 
-- Completed Day 2
-- k3d cluster running
-- Docker installed (to build the app image)
+```mermaid
+graph LR
+    User[User (Browser)] -- "Port Forward (8080)" --> Frontend[Frontend (Go)]
+    Frontend -- "DNS: todo-api-service" --> Backend[Todo API (Go)]
+    Backend -- "DNS: redis-service" --> Redis[(Redis)]
+    Backend -- "DNS: audit-service" --> Audit[Audit Service (Go)]
+```
 
 ## 📋 Lab Exercises
 
-### 1. Build and Import the Application Image
+### 1. Build & Import Images
 
-Since we are adding a Redis client to our code, we need to build a new version of our Go app.
+We need to build two images: one for the Frontend, one for the Backend.
 
 ```powershell
-# Navigate to the day3/app directory
-cd day3/app
+# 1. Build Backend
+cd day3/todo-api
+docker build -t k8s-day3-todo-api:v1 .
+k3d image import k8s-day3-todo-api:v1 -c k8s-class
 
-# Build the Docker image
+# 2. Build Frontend
+cd ../app
 docker build -t k8s-day3-app:v1 .
+k3d image import k8s-day3-app:v1 -c k8s-class
 
-# Import the image into your k3d cluster (replace 'my-cluster' with your cluster name)
-k3d image import k8s-day3-app:v1 -c my-cluster
+# 3. Build Audit Service
+cd ../audit-service
+docker build -t k8s-day3-audit-service:v1 .
+k3d image import k8s-day3-audit-service:v1 -c k8s-class
 ```
 
-### 2. Deploy Redis (The Backend)
-
-We need a database. We'll deploy Redis and expose it internally using a Service.
+### 2. Deploy Services
 
 ```powershell
-# Navigate back to the day3 root
-cd ..
+# Navigate to root
+cd ../..
 
-# Apply the Redis deployment and service
-kubectl apply -f manifests/redis.yaml
-
-# Verify Redis is running
-kubectl get pods -l app=redis
-kubectl get svc redis-service
+# Apply all manifests (Redis, Todo API, Frontend)
+kubectl apply -f day3/manifests/
 ```
 
-**Key Concept:** The Service `redis-service` creates a stable DNS name. Any pod in the cluster can now reach Redis at `redis-service:6379`.
-
-### 3. Deploy the Go Web App
-
-Now deploy the Go app. Look at `manifests/app.yaml` to see how we pass the Redis hostname:
-
-```yaml
-env:
-- name: REDIS_HOST
-  value: "redis-service"
-```
-
-Deploy it:
+### 3. Verify Deployment
 
 ```powershell
-kubectl apply -f manifests/app.yaml
-
-# Wait for pods to be ready
-kubectl get pods -l app=go-web-app -w
+kubectl get pods -w
+# Wait until all 3 pods (redis, todo-api, go-web-app) are Running
 ```
 
-### 4. Test Service Discovery
+### 4. Test the Application
 
-Now verify that the Go app can talk to Redis.
+Port-forward to the **Frontend** service only.
 
 ```powershell
-# Port forward to the Go app service
 kubectl port-forward svc/go-web-app-service 8080:80
-
-# In another terminal:
-# 1. Check health
-curl http://localhost:8080
-# Output: Hello from Go! Running on Pod: ...
-
-# 2. Increment the counter (Connecting to Redis)
-curl http://localhost:8080/incr
-# Output: Hits: 1
-curl http://localhost:8080/incr
-# Output: Hits: 2
 ```
 
-If you see the "Hits" increasing, **Service Discovery is working!** The Go app resolved `redis-service` to the Redis Pod IP and connected successfully.
+1. Open your browser to [http://localhost:8080](http://localhost:8080).
+2. You should see the Frontend UI.
+3. Type a task (e.g., "Learn K8s") and click **Add**.
+4. The page should reload and show the todo item.
 
-### 5. Inspecting DNS (Debugging)
-
-How does this actually work? Let's look inside a Pod.
-
-```powershell
-# Exec into one of your Go app pods
-kubectl exec -it <go-app-pod-name> -- sh
-
-# Inside the pod, check DNS resolution
-nslookup redis-service
-
-# You should see something like:
-# Server:    10.43.0.10
-# Address:   10.43.0.10:53
-# Name:      redis-service.default.svc.cluster.local
-# Address:   10.43.x.x
-```
-
-## 🔍 Understanding Services
-
-- **ClusterIP (Default):** Exposes the Service on a cluster-internal IP. Reachable only from within the cluster.
-- **NodePort:** Exposes the Service on each Node's IP at a static port. Reachable from outside the cluster.
-- **LoadBalancer:** Exposes the Service externally using a cloud provider's load balancer.
-
-In this lab, we used **ClusterIP** for Redis (database should be internal) and the Go App (accessed via port-forward for security/learning).
+### 5. What just happened?
+1. Browser POSTs to Frontend (`/create`).
+2. Frontend POSTs JSON to `http://todo-api-service/todos`.
+3. Todo API writes data to `redis-service`.
+4. Success!
 
 ## 🧹 Cleanup
 
 ```powershell
-kubectl delete -f manifests/
+kubectl delete -f day3/manifests/
 ```
-
-## 🚀 Next Steps
-
-- **Day 4:** Storage & State - Persistence with Volumes (PVs and PVCs)

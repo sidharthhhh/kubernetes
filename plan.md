@@ -53,13 +53,13 @@
     *   CoreDNS & Service Discovery (DNS names: `svc.namespace.svc.cluster.local`).
     *   Endpoints and EndpointSlices.
 *   **Lab:**
-    1.  Deploy Go API and Redis.
-    2.  Expose Redis via ClusterIP.
-    3.  Configure Go API to connect to Redis using DNS (`redis-svc:6379`).
-    4.  Test connectivity via `kubectl port-forward`.
+    1.  Deploy a Multi-Tier Architecture: Frontend (Go) -> Backend (Go/Todo API) -> Redis.
+    2.  Implement Service Discovery: Frontend calls Backend via `http://todo-service`.
+    3.  Backend connects to Redis via `http://redis-service` (Service Chaining).
+    4.  Expose Frontend via Port Forwarding and test the full flow.
 *   **Debug Scenario:**
-    *   **Break:** Misdmatch Service `selector` labels vs Pod labels.
-    *   **Fix:** Debug why Service has no Endpoints (`kubectl get key endpoints`).
+    *   **Break:** Misconfigure the Backend URL in the Frontend (wrong DNS name).
+    *   **Fix:** Use `nslookup` inside the pod to find the correct Service name.
 *   **Pro Tip:** `kubectl port-forward` is your best friend for local debugging.
 
 ### **Day 4: Storage & State (PV, PVC, StorageClass)**

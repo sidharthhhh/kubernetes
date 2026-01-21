@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-api
+  labels:
+    app: todo-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-api
+  template:
+    metadata:
+      labels:
+        app: todo-api
+    spec:
+      containers:
+      - name: todo-api
+        image: k8s-day3-todo-api:v2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        # Service Discovery: Connect to Redis Service
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        # Service Discovery: Connect to Audit Service
+        - name: AUDIT_SERVICE_HOST
+          value: "audit-service"
+        - name: AUDIT_SERVICE_PORT
+          value: "80"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-api-service
+spec:
+  # ClusterIP: Only accessible inside the cluster (by the Frontend)
+  type: ClusterIP
+  selector:
+    app: todo-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
