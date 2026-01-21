@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-web-app
+  labels:
+    app: go-web
+spec:
+  replicas: 3  # Day 2: We want 3 replicas for high availability
+  selector:
+    matchLabels:
+      app: go-web  # CRITICAL: Must match template labels below
+  template:
+    metadata:
+      labels:
+        app: go-web  # Labels for the Pods created by this Deployment
+    spec:
+      containers:
+      - name: web-server
+        image: k8s-day1:v2  # Reusing the alpine-based image from Day 1
+        imagePullPolicy: Never  # For local k3d images
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: PORT
+          value: "8080"
+        # Health Probes: Critical for production reliability
+        readinessProbe:
+          httpGet:
+            path: /  # Application must respond 200 OK at this path
+            port: 8080
+          initialDelaySeconds: 5  # Wait 5s before first probe
+          periodSeconds: 10        # Check every 10s
+          failureThreshold: 3      # Mark unready after 3 failures
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 15  # Wait longer before killing pods
+          periodSeconds: 20        # Check less frequently
+          failureThreshold: 3      # Restart after 3 consecutive failures
+        resources:
+          requests:
+            cpu: 100m      # Request 0.1 CPU core
+            memory: 64Mi   # Request 64 MB RAM
+          limits:
+            cpu: 200m      # Max 0.2 CPU core
+            memory: 128Mi  # Max 128 MB RAM
