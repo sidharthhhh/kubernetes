@@ -76,6 +76,72 @@ kubectl port-forward svc/go-web-app-service 8080:80
 3. Todo API writes data to `redis-service`.
 4. Success!
 
+## 📈 Scaling
+
+You can scale the microservices (e.g., Todo API) horizontally to handle more load.
+
+```powershell
+# Scale to 2 replicas
+kubectl scale deployment todo-api --replicas=2
+
+# Verify horizontal scaling
+kubectl get pods -w
+```
+
+## 🐞 Debugging Guide
+
+If things don't work as expected, use these commands to inspect the cluster.
+
+### 1. Check Service Status
+```powershell
+# See if pods are Running or crashing
+kubectl get pods
+
+# See if services are created and have ClusterIPs
+kubectl get svc
+```
+
+### 2. Inspect Logs
+View the standard output/error of your application containers.
+```powershell
+# Frontend Logs
+kubectl logs -f -l app=go-web-app
+
+# Backend Logs (Todo API)
+kubectl logs -f -l app=todo-api
+
+# Audit Service Logs
+kubectl logs -f -l app=audit-service
+```
+
+### 3. Describe Resources
+Detailed events and configuration. Useful for `ImagePullBackOff` or `CrashLoopBackOff`.
+```powershell
+# Describe a Pod
+kubectl describe pod <pod-name>
+
+# Describe a Deployment
+kubectl describe deployment todo-api
+```
+
+### 4. Direct Access (Port Forwarding)
+Bypass the frontend and query services directly from your local machine.
+
+```powershell
+# Forward Todo API to local 8081
+kubectl port-forward svc/todo-api-service 8081:80
+
+# Windows PowerShell: Test API directly
+Invoke-WebRequest -Uri http://localhost:8081/todos -Method GET
+```
+
+### 5. Check Environment Variables
+Verify if pods are getting correct service hostnames (`REDIS_HOST`, etc).
+
+```powershell
+kubectl exec deployment/todo-api -- env
+```
+
 ## 🧹 Cleanup
 
 ```powershell
