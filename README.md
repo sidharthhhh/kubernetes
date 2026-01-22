@@ -50,6 +50,6 @@ kubectl version
 - ✅ **[Day 2: Controllers & Scalability](./day2/README.md)** - Deployments, ReplicaSets, health probes
 - ✅ **[Day 3: Networking I - Services](./day3/README.md)** - Microservices, ClusterIP, Service Discovery, Scaling
 
-Open [plan.md](./plan.md) for the complete 15-day syllabus.
+Open [plan.md](./plan.md) for the complete 15-day syllabus
 
 Good luck!
