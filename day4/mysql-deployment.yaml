@@ -1,0 +1,49 @@
+# MySQL Deployment
+# Deploys a MySQL Database Container.
+# Key Feature: Attaches the PVC we created to save data permanently.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  
+  # IMPORTANT STRATEGY FOR DATABASES:
+  # Since our PVC is RWO (ReadWriteOnce), it can only be attached to ONE node/pod at a time.
+  # If we do a RollingUpdate (default), K8s tries to start a new Pod BEFORE killing the old one.
+  # The new Pod will fail to attach the volume because the old Pod still has it!
+  # 'Recreate' logic: Kill old Pod -> Volume releases -> Start new Pod.
+  strategy:
+    type: Recreate
+    
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.7 # Using 5.7 for stability in this lab
+        name: mysql
+        
+        # Environment variables for MySQL configuration
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password" # ⚠️ INSECURE: In Day 5 we will move this to a K8s Secret!
+          
+        ports:
+        - containerPort: 3306
+          name: mysql
+          
+        # VOLUME MOUNTS: connecting the storage to the container path
+        volumeMounts:
+        - name: mysql-persistent-storage  # Reference the name in 'volumes' section below
+          mountPath: /var/lib/mysql       # The default customized path where MySQL writes data
+          
+      # VOLUMES: Defining the backing storage for this Pod
+      volumes:
+      - name: mysql-persistent-storage    # Arbitrary name, used in volumeMounts above
+        persistentVolumeClaim:
+          claimName: mysql-pvc            # MUST match the name in your mysql-pvc.yaml

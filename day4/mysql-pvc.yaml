@@ -1,0 +1,25 @@
+# PersistentVolumeClaim (PVC)
+# This is a request for storage from Kubernetes.
+# We don't worry about "where" the storage comes from (Local disk, AWS EBS, etc.)
+# We just ask for "what" we need (Size, Access Mode).
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc   # This name is important! We use it in the Deployment.
+spec:
+  # accessModes determines how the volume can be mounted.
+  # ReadWriteOnce (RWO): Can be mounted by a single Node as Read-Write. 
+  # (Typical for Block storage like AWS EBS or standard Databases)
+  accessModes:
+    - ReadWriteOnce
+    
+  resources:
+    requests:
+      # We ask for 1 Gibibyte of storage. 
+      # If the underlying StorageClass allows resizing, we can edit this later.
+      storage: 1Gi
+      
+  # storageClassName: "local-path" 
+  # In k3s, "local-path" is default, so we can omit this.
+  # If you were on AWS EKS, you might use "gp2".
