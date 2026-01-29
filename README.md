@@ -50,6 +50,7 @@ kubectl version
 - ✅ **[Day 2: Controllers & Scalability](./day2/README.md)** - Deployments, ReplicaSets, health probes
 - ✅ **[Day 3: Networking I - Services](./day3/README.md)** - Microservices, ClusterIP, Service Discovery, Scaling
 - ✅ **[Day 4: Storage & State](./day4/README.md)** - PV, PVC, StorageClass, Persistent Databases
+- ✅ **[Day 5: Rust API Experiment](./day5/README.md)** - Rust + Postgres, Multi-stage Docker Builds, k3d Image Importing
 
 Open [plan.md](./plan.md) for the complete 15-day syllabus
 
