@@ -78,20 +78,23 @@
     *   **Fix:** Debug `Pending` PVCs.
 *   **Interview Q:** "How do I expand a PVC without deleting it?"
 
-### **Day 5: Configuration & Secrets (Decoupling Config from Code)**
-*Goal: 12-Factor App compliance.*
+### **Day 5: Rust API Experiment (Containerized)**
+*Goal: Experiment with Rust API running in Docker/K8s with any DB.*
 
 *   **Concepts:**
-    *   ConfigMaps (Env vars, Mounted volumes).
-    *   Secrets (Opaque, TLS, DockerRegistry).
-    *   Immutable ConfigMaps.
+    *   Rust Async API (e.g., Actix-web/Axum).
+    *   Containerization with Docker (Multi-stage builds for Rust).
+    *   Kubernetes Deployment & Services for Rust apps.
+    *   Database Integration (Simple DB interaction).
 *   **Lab:**
-    1.  Move Go app DB credentials to a Secret.
-    2.  Move app configuration (API keys, feature flags) to ConfigMap.
-    3.  Update ConfigMap and verify hot-reload (if app supports it) or requires restart.
+    1.  Create a simple Rust API (e.g., Hello World + DB Query).
+    2.  Containerize the Rust application (Dockerfile).
+    3.  Run in Docker or Kubernetes.
+    4.  Connect to a Database (e.g., SQLite/Postgres).
+    5.  Document all commands, including infrastructure debugging and destroy steps.
 *   **Debug Scenario:**
-    *   **Break:** Refer to a non-existent Secret key in Deployment.
-    *   **Fix:** Debug `CreateContainerConfigError`.
+    *   **Verify:** Application health and database connectivity.
+    *   **Fix:** Handle startup dependencies (wait-for-it or init containers).
 
 ---
 
