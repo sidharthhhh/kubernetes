@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: whoami-ingress
+  annotations:
+    # If you are using Nginx Ingress, you might need:
+    # kubernetes.io/ingress.class: nginx
+    # For k3s (Traefik), usually no annotation is needed if it's the default,
+    # but sometimes 'kubernetes.io/ingress.class: traefik' helps be explicit.
+spec:
+  tls:
+  - hosts:
+    - api.local
+    secretName: whoami-tls
+  rules:
+  - host: api.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: whoami-service
+            port:
+              number: 80
