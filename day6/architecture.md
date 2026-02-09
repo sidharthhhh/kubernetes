@@ -4,7 +4,7 @@ This diagram visualizes the flow of traffic from the client to the application, 
 
 ```mermaid
 graph TD
-    Client["Client (curl / Browser)"] -->|1. HTTPS Request (api.local)| Ingress[Traefik Ingress Controller]
+    Client["Client (curl / Browser)"] -->|"1. HTTPS Request (api.local)"| Ingress[Traefik Ingress Controller]
     
     subgraph "Kubernetes Cluster"
         direction TB
