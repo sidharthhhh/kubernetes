@@ -4,14 +4,14 @@ This diagram visualizes the flow of traffic from the client to the application, 
 
 ```mermaid
 graph TD
-    Client[Client (curl / Browser)] -->|1. HTTPS Request (api.local)| Ingress[Traefik Ingress Controller]
+    Client["Client (curl / Browser)"] -->|1. HTTPS Request (api.local)| Ingress[Traefik Ingress Controller]
     
     subgraph "Kubernetes Cluster"
         direction TB
-        Ingress -->|2. Decrypt & Route| Service[Service: whoami-service]
-        Service -->|3. Load Balance| Pod[Pod: whoami]
+        Ingress -->|"2. Decrypt & Route"| Service[Service: whoami-service]
+        Service -->|"3. Load Balance"| Pod[Pod: whoami]
         
-        Secret[Secret: whoami-tls] -.->|4. TLS Certificate| Ingress
+        Secret[Secret: whoami-tls] -.->|"4. TLS Certificate"| Ingress
     end
 
     classDef k8s fill:#326ce5,stroke:#fff,stroke-width:2px,color:#fff;
