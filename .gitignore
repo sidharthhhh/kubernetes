@@ -1,28 +1,10 @@
-# Binaries
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+class Solution:
+    def findDuplicate(self, arr):
+        seen = set()
 
-# Test binary, built with `go test -c`
-*.test
+        for num in arr:
+            if num in seen:
+                return num
+            seen.add(num)
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Kubernetes
-*.kubeconfig
-
-# Local Logic
-day1/app/server
+        return -1

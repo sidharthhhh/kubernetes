@@ -117,7 +117,7 @@
     *   **Fix:** Debug `502 Bad Gateway` vs `404 Not Found`.
 *   **Pro Tip:** Always check Ingress Controller logs for backend connectivity issues.
 
-### **Day 7: Advanced Scheduling & Node Management**
+### ✅ **Day 7: Advanced Scheduling & Node Management (Spring Boot Edition)**
 *Goal: Controlling exactly where workloads run.*
 
 *   **Concepts:**
@@ -125,10 +125,11 @@
     *   Node Affinity & Anti-Affinity (Pod-centric).
     *   `cordon` and `drain` (Maintenance mode).
 *   **Lab:**
-    1.  Taint a node `env=prod:NoSchedule`.
-    2.  Try to deploy a normal Pod (it stays Pending).
-    3.  Add Toleration to the Go API deployment.
-    4.  Drain a node safely.
+    1.  **Build & Deploy Spring Boot App**: Created a custom Java Spring Boot app and Dockerized it.
+    2.  **Taint a node** `env=prod:NoSchedule`.
+    3.  Try to deploy a normal Pod (it stays Pending).
+    4.  Add Toleration to the Pod manifest.
+    5.  Drain a node safely.
 *   **Debug Scenario:**
     *   **Break:** Use `requiredDuringScheduling...` with no matching nodes.
     *   **Fix:** Debug `Pending` Pods with `SchedulingFailed`.
