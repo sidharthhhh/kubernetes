@@ -65,6 +65,47 @@ Think of **Node Affinity** as a "Magnet".
 | **Taint & Toleration** | **Repel** (Keep away) | "Keep off the grass!" | keeping Dev pods off Prod nodes. |
 | **Node Affinity** | **Attract** (Come here) | "Free Pizza Here!" | Putting AI apps on GPU nodes. |
 
+
 **Pro Tip**: You often use them **together**!
 *   Use a **Taint** to keep *other* people out.
 *   Use **Affinity** to make sure *your* pod goes in.
+
+---
+
+## 3. Pod Affinity & Anti-Affinity 🤝🚫
+Node affinity is about Pods liking **Nodes**.
+Pod affinity is about Pods liking **other Pods**.
+
+### The Concept
+*   **Pod Affinity**: "I want to be near my friend." (e.g., Web Server + Cache)
+*   **Pod Anti-Affinity**: "I want to be away from my enemy (or clone)." (e.g., Two Web Servers for High Availability)
+
+### The Analogy: Seating at a Wedding 💒
+*   **Pod Affinity**: "I must sit at the same table as my spouse."
+*   **Pod Anti-Affinity**: "I definitely do NOT want to sit at the same table as my ex."
+
+### Real-World Use Case
+*   **High Availability**: You have 3 replicas of your App. You don't want them all on one Node (if that node dies, you lose everything).
+    *   **Solution**: Use **Anti-Affinity** to force them to spread out across different nodes.
+
+---
+
+## 4. Maintenance Mode: Cordon & Drain 🚧
+What if you need to fix a server (Node)? You can't just unplug it while Pods are running!
+
+### The Commands
+1.  **Cordon** (`kubectl cordon node-1`):
+    *   **Meaning**: "Close the door."
+    *   **Action**: No *new* Pods can be scheduled here. Existing pods stay running.
+    *   **Analogy**: Putting a "Closed for Cleaning" sign on a restroom door. People inside can finish, but no one new enters.
+
+2.  **Drain** (`kubectl drain node-1 --ignore-daemonsets`):
+    *   **Meaning**: "Evacuate the building!"
+    *   **Action**: Safely kills all Pods on the node (so they reschedule elsewhere) and then Cordons it.
+    *   **Analogy**: The fire alarm goes off. Everyone must leave immediately and find a new place to go.
+
+### Workflow for Patching a Node
+1.  **Cordon** it (Stop new traffic).
+2.  **Drain** it (Move existing work).
+3.  **Patch/Reboot** the Node.
+4.  **Uncordon** it (`kubectl uncordon node-1`) to let work return.
