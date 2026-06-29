@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-api
+  labels:
+    app: nodejs-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nodejs-api
+  template:
+    metadata:
+      labels:
+        app: nodejs-api
+    spec:
+      containers:
+      - name: nodejs-api
+        # Replace <YOUR_DOCKERHUB_USERNAME> with your actual Docker Hub username!
+        # Or, to test it immediately without building, use a public image like: paulbouwer/hello-kubernetes:1.10.1
+        image: sidharthhhh/nodejs-api:v1
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 2
+          periodSeconds: 5
