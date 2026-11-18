@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logging-traffic-generator
+  namespace: day10-logging
+  labels:
+    app: logging-traffic-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logging-traffic-generator
+  template:
+    metadata:
+      labels:
+        app: logging-traffic-generator
+    spec:
+      containers:
+      - name: curl
+        image: curlimages/curl:8.10.1
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          echo "Starting traffic generator for Day 10 logging demo..."
+          count=0
+          while true; do
+            count=$((count + 1))
+
+            # POSIX-compliant user and item rotation
+            case $((count % 5)) in
+              0) user="alice"; item="k8s-guide" ;;
+              1) user="bob"; item="golang-crash-course" ;;
+              2) user="charlie"; item="devops-handbook" ;;
+              3) user="dave"; item="cloud-architecture" ;;
+              *) user="eve"; item="kubernetes-course" ;;
+            esac
+
+            # Normal successful checkout (Generates INFO logs)
+            curl -s -o /dev/null "http://go-logging-app:8080/api/checkout?user=${user}&item=${item}"
+
+            # Every 4th request: trigger a failure with rich ERROR logs
+            if [ $((count % 4)) -eq 0 ]; then
+              case $((count % 4)) in
+                0) err="database_timeout" ;;
+                1) err="connection_refused" ;;
+                2) err="token_expired" ;;
+                *) err="dead_lock" ;;
+              esac
+              curl -s -o /dev/null "http://go-logging-app:8080/api/fail?reason=${err}"
+            fi
+
+            # Every 7th request: trigger a slow query (Generates WARN logs)
+            if [ $((count % 7)) -eq 0 ]; then
+              curl -s -o /dev/null "http://go-logging-app:8080/api/slow?ms=450"
+            fi
+
+            sleep 0.5
+          done
+        resources:
+          requests:
+            cpu: 20m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi

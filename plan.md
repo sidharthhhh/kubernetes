@@ -134,7 +134,7 @@
     *   **Break:** Use `requiredDuringScheduling...` with no matching nodes.
     *   **Fix:** Debug `Pending` Pods with `SchedulingFailed`.
 
-### **Day 8: Resource Management & QoS**
+### ✅ **Day 8: Resource Management & QoS**
 *Goal: Preventing the "Noisy Neighbor" problem.*
 
 *   **Concepts:**
@@ -148,7 +148,7 @@
     3.  Set a ResourceQuota on a namespace and try to exceed it.
 *   **Interview Q:** "Why is setting CPU limits sometimes controversial?" (Throttling).
 
-### **Day 9: Observability I - Monitoring (Prometheus & Grafana)**
+### ✅ **Day 9: Observability I - Monitoring (Prometheus & Grafana)**
 *Goal: Knowing *what* is happening.*
 
 *   **Concepts:**
@@ -164,7 +164,7 @@
     *   **Break:** Metrics Server down.
     *   **Fix:** Cannot run `kubectl top` or HPA fails.
 
-### **Day 10: Observability II - Logging & Tracing**
+### ✅ **Day 10: Observability II - Logging & Tracing**
 *Goal: Knowing *why* it happened.*
 
 *   **Concepts:**

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-demo-service
+  namespace: day8-resources
+  labels:
+    app: resource-demo
+spec:
+  type: ClusterIP
+  selector:
+    app: resource-demo
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080

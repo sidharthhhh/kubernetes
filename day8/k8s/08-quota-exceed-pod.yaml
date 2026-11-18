@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: greedy-pod
+  namespace: day8-resources
+  labels:
+    app: greedy-app
+spec:
+  containers:
+  - name: greedy-container
+    image: k8s-day8:v1
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 8080
+    resources:
+      requests:
+        cpu: "300m"      # Valid for LimitRange (<= 500m), BUT when added to existing pods (300m used),
+        memory: "400Mi"  # 300m + 300m = 600m > 500m quota! Memory 192Mi + 400Mi = 592Mi > 512Mi quota!
+      limits:
+        cpu: "400m"      # Valid for LimitRange (<= 500m)
+        memory: "512Mi"  # Valid for LimitRange (<= 512Mi)
+    # Notice this pod complies with the LimitRange per-container bounds,
+    # but the AGGREGATE sum across the namespace exceeds the ResourceQuota.
+    # The Admission Controller will reject it with:
+    # Error from server (Forbidden): pods "greedy-pod" is forbidden: exceeded quota: namespace-quota...

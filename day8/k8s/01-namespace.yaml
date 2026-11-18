@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: day8-resources
+  labels:
+    course: kubernetes-crash-course
+    day: "8"

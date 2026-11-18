@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qos-burstable-pod
+  namespace: day8-resources
+  labels:
+    app: resource-demo
+    qos: burstable
+spec:
+  containers:
+  - name: demo
+    image: k8s-day8:v1
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 8080
+    resources:
+      requests:
+        cpu: "100m"      # 0.1 vCPU requested for scheduling
+        memory: "64Mi"   # 64 MiB requested for scheduling
+      limits:
+        cpu: "250m"      # Allows bursting up to 0.25 vCPU
+        memory: "128Mi"  # Hard cap: killing if memory exceeds 128 MiB
+    # NOTE: Since requests < limits (or not all containers match requests == limits),
+    # Kubernetes classifies this Pod as QoS Class: Burstable.
+    # It has guaranteed baseline resources (64Mi/100m), but can burst up to limits.

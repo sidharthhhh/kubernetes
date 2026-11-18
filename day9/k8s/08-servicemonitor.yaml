@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: go-metrics-app-monitor
+  namespace: day9-monitoring
+  labels:
+    release: prometheus-stack  # Common label matched by Prometheus Operator CRDs
+spec:
+  selector:
+    matchLabels:
+      app: go-metrics-app
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 10s
+    scrapeTimeout: 5s

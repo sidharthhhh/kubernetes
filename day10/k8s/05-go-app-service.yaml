@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-logging-app
+  namespace: day10-logging
+  labels:
+    app: go-logging-app
+spec:
+  type: ClusterIP
+  selector:
+    app: go-logging-app
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traffic-generator
+  namespace: day9-monitoring
+  labels:
+    app: traffic-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-generator
+  template:
+    metadata:
+      labels:
+        app: traffic-generator
+    spec:
+      containers:
+      - name: curl
+        image: curlimages/curl:8.10.1
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          echo "Starting traffic generator targeting go-metrics-app..."
+          count=0
+          while true; do
+            count=$((count + 1))
+            # Primary workload: varying latency and intermittent 500s
+            curl -s -o /dev/null http://go-metrics-app:8080/api/work
+            
+            # Every 5th request: home page
+            if [ $((count % 5)) -eq 0 ]; then
+              curl -s -o /dev/null http://go-metrics-app:8080/
+            fi
+            
+            # Every 15th request: explicit error endpoint for error rate graphs
+            if [ $((count % 15)) -eq 0 ]; then
+              curl -s -o /dev/null http://go-metrics-app:8080/api/error
+            fi
+            
+            sleep 0.2
+          done
+        resources:
+          requests:
+            cpu: 20m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: dev-limit-range
+  namespace: day8-resources
+spec:
+  limits:
+  # Enforce constraints at the Container level
+  - type: Container
+    # Default limits applied if a container does not specify its own limits
+    default:
+      cpu: "300m"
+      memory: "256Mi"
+    # Default requests applied if a container does not specify its own requests
+    defaultRequest:
+      cpu: "100m"
+      memory: "64Mi"
+    # Max allowed resource a single container can request/limit
+    max:
+      cpu: "500m"
+      memory: "512Mi"
+    # Min allowed resource a single container can request/limit
+    min:
+      cpu: "50m"
+      memory: "16Mi"
+    # Prevents extreme overcommit: limit cannot exceed 4x the request
+    maxLimitRequestRatio:
+      cpu: "4"
+      memory: "4"

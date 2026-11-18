@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: namespace-quota
+  namespace: day8-resources
+spec:
+  hard:
+    # Aggregate requests across all active pods in the namespace
+    requests.cpu: "500m"
+    requests.memory: "512Mi"
+    # Aggregate limits across all active pods in the namespace
+    limits.cpu: "1"
+    limits.memory: "1Gi"
+    # Max number of Pods allowed in this namespace
+    count/pods: "4"

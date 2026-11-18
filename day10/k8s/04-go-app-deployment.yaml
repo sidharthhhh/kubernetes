@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-logging-app
+  namespace: day10-logging
+  labels:
+    app: go-logging-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: go-logging-app
+  template:
+    metadata:
+      labels:
+        app: go-logging-app
+    spec:
+      containers:
+      - name: api
+        image: k8s-day10:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10

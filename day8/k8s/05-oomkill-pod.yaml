@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: oomkill-demo-pod
+  namespace: day8-resources
+  labels:
+    app: resource-demo
+    experiment: oomkill
+spec:
+  # Using restartPolicy: Never makes it easy to observe the OOMKilled status
+  # without the container immediately restarting in a loop!
+  # Change to "Always" if you want to observe CrashLoopBackOff.
+  restartPolicy: Never
+  containers:
+  - name: demo
+    image: k8s-day8:v1
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 8080
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "25Mi"
+      limits:
+        cpu: "200m"
+        memory: "50Mi" # <--- Strict 50 MiB limit!
+    # When you call GET /allocate?mb=80, memory consumption will exceed 50Mi.
+    # Linux cgroup will trigger OOM killer, sending SIGKILL (Signal 9, Exit Code 128+9 = 137).
