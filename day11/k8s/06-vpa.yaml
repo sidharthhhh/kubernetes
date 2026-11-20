@@ -1,0 +1,25 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: go-autoscaler-vpa
+  namespace: day11-autoscaling
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: go-autoscaler
+  updatePolicy:
+    # Mode "Off": VPA only computes recommendations (Target, LowerBound, UpperBound).
+    # It will NOT restart pods or change their resource requests automatically.
+    # Set to "Auto" or "Recreate" in production to let VPA automatically evict and resize pods.
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: '*'
+      minAllowed:
+        cpu: 50m
+        memory: 32Mi
+      maxAllowed:
+        cpu: 500m
+        memory: 512Mi
+      controlledResources: ["cpu", "memory"]

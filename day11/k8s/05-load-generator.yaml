@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-generator
+  namespace: day11-autoscaling
+  labels:
+    app: load-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: load-generator
+  template:
+    metadata:
+      labels:
+        app: load-generator
+    spec:
+      containers:
+      - name: load
+        image: curlimages/curl:8.10.1
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          echo "Starting high-concurrency load generator against go-autoscaler..."
+          # Clean exit on SIGTERM/SIGINT so deletion completes instantly
+          trap "echo 'Stopping load generator...'; kill 0; exit 0" TERM INT
+
+          # Launch 5 concurrent background workers to stress the initial pod
+          for i in 1 2 3 4 5; do
+            (
+              while true; do
+                curl -s -o /dev/null "http://go-autoscaler:8080/cpu-load?loops=400000"
+                sleep 0.05
+              done
+            ) &
+          done
+
+          # Wait for signals
+          wait
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 300m
+            memory: 128Mi

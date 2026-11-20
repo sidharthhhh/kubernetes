@@ -182,7 +182,7 @@
 ## **Phase 3: Production Hardening (Days 11-15)**
 *Focus: Security, Automation, and Incident Response.*
 
-### **Day 11: Auto-Scaling (HPA & VPA)**
+### ✅ **Day 11: Auto-Scaling (HPA & VPA)**
 *Goal: Handling traffic spikes automatically.*
 
 *   **Concepts:**

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-autoscaler
+  namespace: day11-autoscaling
+  labels:
+    app: go-autoscaler
+spec:
+  # Initial replica count: 1 (HPA will adjust this dynamically)
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-autoscaler
+  template:
+    metadata:
+      labels:
+        app: go-autoscaler
+    spec:
+      containers:
+      - name: api
+        image: k8s-day11:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        # CRITICAL: HPA requires 'requests' to calculate averageUtilization percentage!
+        # Target: 50% utilization of 100m = 50m CPU threshold.
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 300m
+            memory: 128Mi
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
